@@ -42,11 +42,21 @@ public class Transaction implements Serializable {
     public Transaction() {
     }
 
-    public Transaction(BuddyAccount buddyOwner, BuddyAccount buddyReceiver, BankAccount bankAccount, LocalDate date,
-                       String description, BigDecimal amount, BigDecimal fee) {
+    public Transaction(BuddyAccount buddyOwner, BuddyAccount buddyReceiver, LocalDate date, String description,
+                       BigDecimal amount, BigDecimal fee) {
         super();
         this.buddyOwner = buddyOwner;
         this.buddyReceiver = buddyReceiver;
+        this.date = date;
+        this.description = description;
+        this.amount = amount;
+        this.fee = fee;
+    }
+
+    public Transaction(BuddyAccount buddyOwner, BankAccount bankAccount, LocalDate date, String description,
+                       BigDecimal amount, BigDecimal fee) {
+        super();
+        this.buddyOwner = buddyOwner;
         this.bankAccount = bankAccount;
         this.date = date;
         this.description = description;
