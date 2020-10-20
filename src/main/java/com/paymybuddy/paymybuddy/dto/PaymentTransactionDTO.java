@@ -1,57 +1,35 @@
 package com.paymybuddy.paymybuddy.dto;
 
+import com.sun.istack.NotNull;
+import javax.validation.constraints.NotEmpty;
+import lombok.*;
+import org.hibernate.validator.constraints.Length;
+import org.springframework.format.annotation.NumberFormat;
+
 import java.math.BigDecimal;
 
+@NoArgsConstructor(access = AccessLevel.PUBLIC)
+@AllArgsConstructor(access = AccessLevel.PUBLIC)
+@Getter(AccessLevel.PUBLIC)
+@Setter(AccessLevel.PUBLIC)
 public class PaymentTransactionDTO {
 
+    private static final int DESCRIPTION_MAX_SIZE = 100;
+
+    @NotNull
+    @NotEmpty
     private String senderEmail;
 
+    @NotNull
+    @NotEmpty
     private String receiverEmail;
 
+    @NotNull
+    @NotEmpty
+    @Length(min = 1, max = DESCRIPTION_MAX_SIZE)
     private String description;
 
+    @NotNull
+    @NumberFormat
     private BigDecimal amount;
-
-    public PaymentTransactionDTO(final String senderEmail, final String receiverEmail, final String description,
-                                 final BigDecimal amount) {
-        this.senderEmail = senderEmail;
-        this.receiverEmail = receiverEmail;
-        this.description = description;
-        this.amount = amount;
-    }
-
-    public PaymentTransactionDTO() {
-    }
-
-    public String getSenderEmail() {
-        return senderEmail;
-    }
-
-    public void setSenderEmail(String senderEmail) {
-        this.senderEmail = senderEmail;
-    }
-
-    public String getReceiverEmail() {
-        return receiverEmail;
-    }
-
-    public void setReceiverEmail(String receiverEmail) {
-        this.receiverEmail = receiverEmail;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
-    }
 }
