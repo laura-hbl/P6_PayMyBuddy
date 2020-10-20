@@ -1,6 +1,7 @@
 package com.paymybuddy.paymybuddy.model;
 
 import javax.persistence.*;
+import lombok.*;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -8,6 +9,9 @@ import java.util.Collection;
 
 @Entity
 @Table(name = "buddy_account")
+@NoArgsConstructor(access = AccessLevel.PUBLIC)
+@Getter(AccessLevel.PUBLIC)
+@Setter(AccessLevel.PUBLIC)
 public class BuddyAccount implements Serializable {
 
     @Id
@@ -23,57 +27,14 @@ public class BuddyAccount implements Serializable {
     private BigDecimal balance;
 
     @OneToMany(mappedBy = "buddyOwner", fetch = FetchType.LAZY)
-    private Collection<Transaction> transactionSenders;
+    private Collection<Transaction> senders;
 
     @OneToMany(mappedBy = "buddyReceiver", fetch = FetchType.LAZY)
-    private Collection<Transaction> transactionReceivers;
-
-    public BuddyAccount() {
-    }
+    private Collection<Transaction> receivers;
 
     public BuddyAccount(User owner, BigDecimal balance) {
         super();
         this.owner = owner;
         this.balance = balance;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public User getOwner() {
-        return owner;
-    }
-
-    public void setOwner(User owner) {
-        this.owner = owner;
-    }
-
-    public BigDecimal getBalance() {
-        return balance;
-    }
-
-    public void setBalance(BigDecimal balance) {
-        this.balance = balance;
-    }
-
-    public Collection<Transaction> getTransactionSenders() {
-        return transactionSenders;
-    }
-
-    public void setTransactionSenders(Collection<Transaction> transactionSenders) {
-        this.transactionSenders = transactionSenders;
-    }
-
-    public Collection<Transaction> getTransactionReceivers() {
-        return transactionReceivers;
-    }
-
-    public void setTransactionReceivers(Collection<Transaction> transactionReceivers) {
-        this.transactionReceivers = transactionReceivers;
     }
 }
