@@ -12,7 +12,5 @@ public interface IUserService {
     User getUserByEmail(String email);
 
     void addConnection(String ownerEmail, String buddyEmail);
-
-    void deleteConnection(String myEmail, String buddyEmail);
 }
 
