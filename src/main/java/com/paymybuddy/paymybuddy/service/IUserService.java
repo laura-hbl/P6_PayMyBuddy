@@ -1,18 +1,18 @@
 package com.paymybuddy.paymybuddy.service;
 
-import com.paymybuddy.paymybuddy.dto.UserRegistrationDTO;
+import com.paymybuddy.paymybuddy.dto.UserDTO;
 import com.paymybuddy.paymybuddy.model.User;
-import org.springframework.security.core.userdetails.UserDetailsService;
 
-public interface IUserService extends UserDetailsService {
+public interface IUserService {
 
-    UserRegistrationDTO registerUser(UserRegistrationDTO userDTO);
+    UserDTO registerUser(UserDTO userDTO);
 
     void login(String userName, String password);
 
     User getUserByEmail(String email);
 
-    void addConnection(String myEmail, String buddyEmail);
+    void addConnection(String ownerEmail, String buddyEmail);
 
-    User getConnection(String myEmail, String buddyEmail);
+    void deleteConnection(String myEmail, String buddyEmail);
 }
+
