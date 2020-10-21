@@ -11,15 +11,18 @@ import com.paymybuddy.paymybuddy.model.User;
 import com.paymybuddy.paymybuddy.repository.TransactionRepository;
 import com.paymybuddy.paymybuddy.util.FeeCalculator;
 import javax.transaction.Transactional;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Collection;
 
 @Service
 public class TransactionService implements ITransactionService {
+
+    private static final Logger LOGGER = LogManager.getLogger(TransactionService.class);
 
     private final TransactionRepository transactionRepository;
 
@@ -28,6 +31,7 @@ public class TransactionService implements ITransactionService {
     private final IBuddyAccountService buddyAccountService;
 
     private final FeeCalculator feeCalculator;
+
 
     @Autowired
     public TransactionService(final TransactionRepository transactionRepository, final IUserService userService,
@@ -40,101 +44,90 @@ public class TransactionService implements ITransactionService {
 
     @Transactional
     public TransactionDTO transferToBankAccount(PersonalTransactionDTO transferInfo) {
-
+        LOGGER.debug("Inside TransactionService.transferToBankAccount for {}", transferInfo.getEmail());
         User user = userService.getUserByEmail(transferInfo.getEmail());
 
         if (user.getBankAccount() == null) {
             throw new ResourceNotFoundException("You need to register your Bank Account to transfer money");
         }
-
         BuddyAccount buddyAccount = user.getBuddyAccount();
+
         BigDecimal balance = buddyAccount.getBalance();
         BigDecimal amount = transferInfo.getAmount();
-
         BigDecimal fee = feeCalculator.getFee(amount);
 
         if (balance.compareTo(amount.add(fee)) < 0) {
-            throw new BadRequestException("Insufficient funds for this transfer !");
+            throw new BadRequestException("Insufficient funds on your balance for this transfer!");
         }
-
         buddyAccount.setBalance(balance.subtract(amount.add(fee)));
-        Transaction transaction = new Transaction(user.getBuddyAccount(), user.getBankAccount(), LocalDate.now(),
-                transferInfo.getDescription(), transferInfo.getAmount(), fee);
-
         buddyAccountService.saveBuddyAccount(buddyAccount);
-        Transaction transfer = transactionRepository.save(transaction);
 
-        return new TransactionDTO(transfer.getBuddyOwner().getOwner().getEmail(), transfer.getDate(),
-                transfer.getDescription(), transfer.getAmount(), transfer.getFee());
+        Transaction transaction = transactionRepository.save(new Transaction(buddyAccount, user.getBankAccount(),
+                LocalDate.now(), transferInfo.getDescription(), amount, fee));
+
+        TransactionDTO transactionDTO = new TransactionDTO(transaction.getBuddyOwner().getOwner().getEmail(),
+                transaction.getDate(), transaction.getDescription(), transaction.getAmount(), transaction.getFee());
+
+        return transactionDTO;
     }
 
     @Transactional
     public TransactionDTO rechargeBalance(PersonalTransactionDTO rechargeInfo) {
-
+        LOGGER.debug("Inside TransactionService.rechargeBalance for {}", rechargeInfo.getEmail());
         User user = userService.getUserByEmail(rechargeInfo.getEmail());
 
         if (user.getBankAccount() == null) {
             throw new ResourceNotFoundException("You need to register your Bank Account to recharge balance");
         }
-
         BuddyAccount buddyAccount = user.getBuddyAccount();
         BigDecimal balance = buddyAccount.getBalance();
         BigDecimal amount = rechargeInfo.getAmount();
 
         BigDecimal fee = feeCalculator.getFee(amount);
-
-        if (amount.equals(BigDecimal.ZERO)) {
-            throw new BadRequestException(" Invalid Input! Please enter a valid amount!");
-        }
-
         buddyAccount.setBalance(balance.subtract(fee).add(amount));
-        Transaction transaction = new Transaction(user.getBuddyAccount(), user.getBankAccount(), LocalDate.now(),
-                rechargeInfo.getDescription(), rechargeInfo.getAmount(), fee);
-
         buddyAccountService.saveBuddyAccount(buddyAccount);
-        Transaction recharge = transactionRepository.save(transaction);
 
-        return new TransactionDTO(recharge.getBuddyOwner().getOwner().getEmail(),  recharge.getDate(),
-                recharge.getDescription(), recharge.getAmount(), recharge.getFee());
+        Transaction transaction = transactionRepository.save(new Transaction(buddyAccount, user.getBankAccount(),
+                LocalDate.now(), rechargeInfo.getDescription(), amount, fee));
+
+        TransactionDTO transactionDTO = new TransactionDTO(transaction.getBuddyOwner().getOwner().getEmail(),
+                transaction.getDate(), transaction.getDescription(), transaction.getAmount(), transaction.getFee());
+
+        return transactionDTO;
     }
 
     @Transactional
     public TransactionDTO payMyBuddy(PaymentTransactionDTO paymentInfo) {
-
+        LOGGER.debug("Inside TransactionService.payMyBuddy");
         User sender = userService.getUserByEmail(paymentInfo.getSenderEmail());
-        User receiver = userService.getConnection(paymentInfo.getSenderEmail(), paymentInfo.getReceiverEmail());
+        User receiver = userService.getUserByEmail(paymentInfo.getReceiverEmail());
 
+        if (!sender.getContacts().contains(receiver)) {
+            throw new ResourceNotFoundException("Fail to get connection. Please check the email entered");
+        }
         BuddyAccount senderBuddyAccount = sender.getBuddyAccount();
-        BuddyAccount receiverBuddyAccount = receiver.getBuddyAccount();
-
         BigDecimal senderBalance = senderBuddyAccount.getBalance();
-        BigDecimal receiverBalance = receiverBuddyAccount.getBalance();
-
         BigDecimal amount = paymentInfo.getAmount();
+
         BigDecimal fee = feeCalculator.getFee(amount);
 
         if (senderBalance.compareTo(amount.add(fee)) < 0) {
             throw new BadRequestException("Insufficient funds for this transfer. Please recharge your balance!");
         }
-
-        Transaction transaction = new Transaction(sender.getBuddyAccount(), receiver.getBuddyAccount(), LocalDate.now(),
-                paymentInfo.getDescription(), paymentInfo.getAmount(), fee);
-
         senderBuddyAccount.setBalance(senderBalance.subtract(amount.add(fee)));
-        Collection<Transaction> transactionReceiver = senderBuddyAccount.getTransactionReceivers();
-        transactionReceiver.add(transaction);
-
-        receiverBuddyAccount.setBalance(receiverBalance.add(amount));
-        Collection<Transaction> transactionSender = senderBuddyAccount.getTransactionSenders();
-        transactionSender.add(transaction);
-
         buddyAccountService.saveBuddyAccount(senderBuddyAccount);
+
+        BuddyAccount receiverBuddyAccount = receiver.getBuddyAccount();
+        receiverBuddyAccount.setBalance(receiverBuddyAccount.getBalance().add(amount));
         buddyAccountService.saveBuddyAccount(receiverBuddyAccount);
 
-        Transaction payment = transactionRepository.save(transaction);
+        Transaction transaction = transactionRepository.save(new Transaction(senderBuddyAccount, receiverBuddyAccount,
+                LocalDate.now(), paymentInfo.getDescription(), amount, fee));
 
-        return new TransactionDTO(payment.getBuddyOwner().getOwner().getEmail(),
-                payment.getBuddyReceiver().getOwner().getEmail(), payment.getDate(), payment.getDescription(),
-                payment.getAmount(), payment.getFee());
+        TransactionDTO transactionDTO = new TransactionDTO(transaction.getBuddyOwner().getOwner().getEmail(),
+                transaction.getBuddyReceiver().getOwner().getEmail(), transaction.getDate(),
+                transaction.getDescription(), transaction.getAmount(), transaction.getFee());
+
+        return transactionDTO;
     }
 }
