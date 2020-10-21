@@ -8,10 +8,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class BuddyAccountService implements IBuddyAccountService {
 
-    private BuddyAccountRepository buddyAccountRepository;
+    private final BuddyAccountRepository buddyAccountRepository;
 
     @Autowired
-    public BuddyAccountService(BuddyAccountRepository buddyAccountRepository) {
+    public BuddyAccountService(final BuddyAccountRepository buddyAccountRepository) {
         this.buddyAccountRepository = buddyAccountRepository;
     }
 

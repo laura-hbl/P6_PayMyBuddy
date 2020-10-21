@@ -1,7 +1,6 @@
 package com.paymybuddy.paymybuddy.service;
 
 import com.paymybuddy.paymybuddy.dto.BankAccountDTO;
-import com.paymybuddy.paymybuddy.dto.BankAccountInfoDTO;
 import com.paymybuddy.paymybuddy.exception.DataAlreadyRegisteredException;
 import com.paymybuddy.paymybuddy.model.BankAccount;
 import com.paymybuddy.paymybuddy.model.User;
@@ -12,9 +11,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class BankAccountService implements IBankAccountService {
 
-    private BankAccountRepository bankAccountRepository;
+    private final BankAccountRepository bankAccountRepository;
 
-    private IUserService userService;
+    private final IUserService userService;
 
     @Autowired
     public BankAccountService(final BankAccountRepository bankAccountRepository, final UserService userService) {
@@ -22,18 +21,19 @@ public class BankAccountService implements IBankAccountService {
         this.userService = userService;
     }
 
-    public BankAccountDTO createBankAccount(BankAccountInfoDTO bankAccountInfoDTO) {
+    public BankAccountDTO createBankAccount(BankAccountDTO bankAccountDTO) {
 
-        User user = userService.getUserByEmail(bankAccountInfoDTO.getEmail());
+        User user = userService.getUserByEmail(bankAccountDTO.getEmail());
 
         if (user.getBankAccount() != null) {
-            throw new DataAlreadyRegisteredException("Bank Account is already registered");
+            throw new DataAlreadyRegisteredException("Your bank Account is already registered");
         }
 
-        BankAccount bankAccount = bankAccountRepository.save(new BankAccount(user, bankAccountInfoDTO.getIban(),
-                bankAccountInfoDTO.getBic()));
+        BankAccount bankAccount = new BankAccount(user, bankAccountDTO.getIban(), bankAccountDTO.getBic());
+        BankAccount bankAccountSaved = bankAccountRepository.save(bankAccount);
 
-        return new BankAccountDTO(bankAccount.getIban(), bankAccount.getBic());
+        return new BankAccountDTO(bankAccountSaved.getOwner().getEmail(), bankAccountSaved.getIban(),
+                bankAccountSaved.getBic());
     }
 
 }
