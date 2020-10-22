@@ -1,10 +1,11 @@
 package com.paymybuddy.paymybuddy.dto;
 
 import com.sun.istack.NotNull;
+import javax.validation.constraints.DecimalMax;
+import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotEmpty;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
-import org.springframework.format.annotation.NumberFormat;
 
 import java.math.BigDecimal;
 
@@ -17,19 +18,20 @@ public class PaymentTransactionDTO {
     private static final int DESCRIPTION_MAX_SIZE = 100;
 
     @NotNull
-    @NotEmpty
+    @NotEmpty(message = "Sender email is required")
     private String senderEmail;
 
     @NotNull
-    @NotEmpty
+    @NotEmpty(message = "Buddy email is required")
     private String receiverEmail;
 
     @NotNull
-    @NotEmpty
-    @Length(min = 1, max = DESCRIPTION_MAX_SIZE)
+    @NotEmpty(message = "Description is required")
+    @Length(max = DESCRIPTION_MAX_SIZE, message = "Description size must have less than 100 characters")
     private String description;
 
     @NotNull
-    @NumberFormat
+    @DecimalMax(value = "999.99", message = "maximum amount authorized is 999.99")
+    @DecimalMin(value = "1.00", message = "minimum amount authorized is 1" )
     private BigDecimal amount;
 }

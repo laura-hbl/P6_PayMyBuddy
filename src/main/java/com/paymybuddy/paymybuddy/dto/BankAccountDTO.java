@@ -20,16 +20,16 @@ public class BankAccountDTO {
     private static final int BIC_MAX_SIZE = 11;
 
     @NotNull
-    @NotEmpty
+    @NotEmpty(message = "Email is required")
     private String email;
 
     @NotNull
-    @NotEmpty
-    @Length(min = IBAN_MIN_SIZE, max = IBAN_MAX_SIZE)
+    @NotEmpty(message = "IBAN code is required")
+    @Length(min = IBAN_MIN_SIZE, max = IBAN_MAX_SIZE, message = "Please enter a valid IBAN code")
     private String iban;
 
     @NotNull
-    @NotEmpty
-    @Length(min = BIC_MIN_SIZE, max = BIC_MAX_SIZE)
+    @NotEmpty(message = "BIC code is required")
+    @Length(min = BIC_MIN_SIZE, max = BIC_MAX_SIZE, message = "Please enter a valid BIC code")
     private String bic;
 }
