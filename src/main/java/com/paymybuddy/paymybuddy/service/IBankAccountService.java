@@ -4,6 +4,5 @@ import com.paymybuddy.paymybuddy.dto.BankAccountDTO;
 
 public interface IBankAccountService {
 
-    BankAccountDTO createBankAccount(BankAccountDTO bankAccountDTO);
-
+    BankAccountDTO createBankAccount(String ownerEmail, BankAccountDTO bankAccountDTO);
 }

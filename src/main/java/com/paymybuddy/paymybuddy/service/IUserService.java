@@ -7,10 +7,8 @@ public interface IUserService {
 
     UserDTO registerUser(UserDTO userDTO);
 
-    void login(String userName, String password);
-
     User getUserByEmail(String email);
 
-    void addConnection(String ownerEmail, String buddyEmail);
+    void addConnection(String username, String buddyEmail);
 }
 

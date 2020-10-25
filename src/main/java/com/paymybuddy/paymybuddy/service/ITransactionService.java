@@ -6,9 +6,9 @@ import com.paymybuddy.paymybuddy.dto.TransactionDTO;
 
 public interface ITransactionService {
 
-    TransactionDTO transferToBankAccount(PersonalTransactionDTO transfer);
+    TransactionDTO transferToBankAccount(String ownerEmail, PersonalTransactionDTO transfer);
 
-    TransactionDTO rechargeBalance(PersonalTransactionDTO recharge);
+    TransactionDTO rechargeBalance(String ownerEmail, PersonalTransactionDTO recharge);
 
-    TransactionDTO payMyBuddy(PaymentTransactionDTO payment);
+    TransactionDTO payMyBuddy(String ownerEmail, PaymentTransactionDTO payment);
 }
