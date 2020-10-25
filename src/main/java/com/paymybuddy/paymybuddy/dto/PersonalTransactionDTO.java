@@ -1,5 +1,6 @@
 package com.paymybuddy.paymybuddy.dto;
 
+import com.paymybuddy.paymybuddy.constants.Constraints;
 import com.sun.istack.NotNull;
 import javax.validation.constraints.DecimalMax;
 import javax.validation.constraints.DecimalMin;
@@ -15,15 +16,9 @@ import java.math.BigDecimal;
 @Setter(AccessLevel.PUBLIC)
 public class PersonalTransactionDTO {
 
-    private static final int DESCRIPTION_MAX_SIZE = 100;
-
-    @NotNull
-    @NotEmpty(message = "Email is required")
-    private String email;
-
     @NotNull
     @NotEmpty(message = "Description is required")
-    @Length(max = DESCRIPTION_MAX_SIZE, message = "Description size must have less than 100 characters")
+    @Length(max = Constraints.DESCRIPTION_MAX_SIZE, message = "Description size must have less than 100 characters")
     private String description;
 
     @NotNull

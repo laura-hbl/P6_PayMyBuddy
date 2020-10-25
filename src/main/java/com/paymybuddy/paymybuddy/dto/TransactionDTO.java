@@ -13,9 +13,7 @@ import java.time.LocalDate;
 @Setter(AccessLevel.PUBLIC)
 public class TransactionDTO {
 
-    private String ownerEmail;
-
-    private String buddyEmail;
+    private String email;
 
     private LocalDate date;
 
@@ -25,18 +23,16 @@ public class TransactionDTO {
 
     private BigDecimal fee;
 
-    public TransactionDTO(String ownerEmail, String buddyEmail, LocalDate date, String description, BigDecimal amount,
+    public TransactionDTO(String buddyEmail, LocalDate date, String description, BigDecimal amount,
                           BigDecimal fee) {
-        this.ownerEmail = ownerEmail;
-        this.buddyEmail = buddyEmail;
+        this.email = buddyEmail;
         this.date = date;
         this.description = description;
         this.amount = amount;
         this.fee = fee;
     }
 
-    public TransactionDTO(String ownerEmail, LocalDate date, String description, BigDecimal amount, BigDecimal fee) {
-        this.ownerEmail = ownerEmail;
+    public TransactionDTO(LocalDate date, String description, BigDecimal amount, BigDecimal fee) {
         this.date = date;
         this.description = description;
         this.amount = amount;
