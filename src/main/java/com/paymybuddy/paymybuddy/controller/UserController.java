@@ -1,76 +1,59 @@
 package com.paymybuddy.paymybuddy.controller;
 
+import com.paymybuddy.paymybuddy.dto.ConnectionDTO;
 import com.paymybuddy.paymybuddy.dto.UserDTO;
-import com.paymybuddy.paymybuddy.exception.BadRequestException;
+import com.paymybuddy.paymybuddy.security.MyUserDetailsService;
 import com.paymybuddy.paymybuddy.service.IUserService;
-import com.paymybuddy.paymybuddy.util.Validator;
+import com.paymybuddy.paymybuddy.util.LoginEmailRetriever;
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class UserController {
 
+    private static final Logger LOGGER = LogManager.getLogger(UserController.class);
+
     private final IUserService userService;
 
-    private final Validator validator;
+    private final LoginEmailRetriever loginEmailRetriever;
+
+    private final MyUserDetailsService myUserDetailsService;
 
     @Autowired
-    public UserController(final IUserService userService, final Validator validator) {
+    public UserController(final IUserService userService, final LoginEmailRetriever loginEmailRetriever,
+                          final MyUserDetailsService myUserDetailsService) {
         this.userService = userService;
-        this.validator = validator;
+        this.loginEmailRetriever = loginEmailRetriever;
+        this.myUserDetailsService = myUserDetailsService;
     }
 
     @PostMapping("/registration")
-    public ResponseEntity<UserDTO> registerUser(@RequestBody UserDTO user) {
-
-        validator.validate(user);
+    public ResponseEntity<UserDTO> registerUser(@Valid @RequestBody UserDTO user) {
+        LOGGER.debug("Registration request with username {}", user.getEmail());
 
         UserDTO userSaved = userService.registerUser(user);
 
+        LOGGER.info("User registration request - SUCCESS");
         return new ResponseEntity<>(userSaved, HttpStatus.CREATED);
     }
 
-    @PutMapping("/login")
-    public ResponseEntity<Object> loginUser(@RequestParam("username") final String username,
-                                            @RequestParam("password") final String password) {
-
-        if (username == null || username.trim().length() == 0 || password == null
-                || password.trim().length() == 0) {
-            throw new BadRequestException("Bad request : missing or incomplete information");
-        }
-
-        userService.login(username, password);
-
-        return new ResponseEntity<>("Welcome to Pay my Buddy!", HttpStatus.OK);
-    }
-
     @PostMapping("/contact")
-    public ResponseEntity<Object> addConnection(@RequestParam("myEmail") final String myEmail,
-                                                @RequestParam("buddyEmail") final String buddyEmail) {
+    public String addConnection(@Valid @RequestBody ConnectionDTO connectionDTO, HttpServletRequest request) {
+        LOGGER.debug("Add connection request with buddy email {}", connectionDTO.getBuddyEmail());
 
-        if (myEmail == null || myEmail.trim().length() == 0 || buddyEmail == null
-                || buddyEmail.trim().length() == 0) {
-            throw new BadRequestException("Bad request : missing or incomplete information");
-        }
+        String ownerEmail = loginEmailRetriever.getUsername(request);
 
-        userService.addConnection(myEmail, buddyEmail);
+        userService.addConnection(ownerEmail, connectionDTO.getBuddyEmail());
 
-        return new ResponseEntity<>("Connection is add successfully!", HttpStatus.OK);
-    }
-
-    @DeleteMapping("/contact")
-    public ResponseEntity<Object> deleteConnection(@RequestParam("myEmail") final String myEmail,
-                                                   @RequestParam("buddyEmail") final String buddyEmail) {
-
-        if (myEmail == null || myEmail.trim().length() == 0 || buddyEmail == null
-                || buddyEmail.trim().length() == 0) {
-            throw new BadRequestException("Bad request : missing or incomplete information");
-        }
-
-        userService.deleteConnection(myEmail, buddyEmail);
-
-        return new ResponseEntity<>("Connection is delete successfully!", HttpStatus.OK);
+        LOGGER.info("Add connection request - SUCCESS");
+        return "Connection is add successfully!";
     }
 }
