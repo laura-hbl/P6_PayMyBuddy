@@ -5,11 +5,15 @@ import com.paymybuddy.paymybuddy.exception.DataAlreadyRegisteredException;
 import com.paymybuddy.paymybuddy.model.BankAccount;
 import com.paymybuddy.paymybuddy.model.User;
 import com.paymybuddy.paymybuddy.repository.BankAccountRepository;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class BankAccountService implements IBankAccountService {
+
+    private static final Logger LOGGER = LogManager.getLogger(BankAccountService.class);
 
     private final BankAccountRepository bankAccountRepository;
 
@@ -21,19 +25,16 @@ public class BankAccountService implements IBankAccountService {
         this.userService = userService;
     }
 
-    public BankAccountDTO createBankAccount(BankAccountDTO bankAccountDTO) {
-
-        User user = userService.getUserByEmail(bankAccountDTO.getEmail());
+    public BankAccountDTO createBankAccount(String ownerEmail, BankAccountDTO bankAccountDTO) {
+        LOGGER.debug("Inside BankAccountService.createBankAccount for username : " + ownerEmail);
+        User user = userService.getUserByEmail(ownerEmail);
 
         if (user.getBankAccount() != null) {
             throw new DataAlreadyRegisteredException("Your bank Account is already registered");
         }
+        BankAccount bankAccount = bankAccountRepository.save(new BankAccount(user, bankAccountDTO.getIban(),
+                bankAccountDTO.getBic()));
 
-        BankAccount bankAccount = new BankAccount(user, bankAccountDTO.getIban(), bankAccountDTO.getBic());
-        BankAccount bankAccountSaved = bankAccountRepository.save(bankAccount);
-
-        return new BankAccountDTO(bankAccountSaved.getOwner().getEmail(), bankAccountSaved.getIban(),
-                bankAccountSaved.getBic());
+        return new BankAccountDTO(bankAccount.getIban(), bankAccount.getBic());
     }
-
 }

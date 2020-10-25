@@ -9,8 +9,6 @@ import com.paymybuddy.paymybuddy.security.MyUserDetailsService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -44,7 +42,8 @@ public class UserService implements IUserService {
         User userFound = userRepository.findByEmail(userDTO.getEmail());
 
         if (userFound != null) {
-            throw new DataAlreadyRegisteredException("An User is already registered with this email");
+            throw new DataAlreadyRegisteredException("Registration failed. The email provided may be registered " +
+                    "already");
         }
         User user = userRepository.save(new User(userDTO.getFirstName(), userDTO.getLastName(),
                 userDTO.getEmail(), passwordEncoder.encode(userDTO.getPassword()), userDTO.getPhone()));
@@ -53,17 +52,6 @@ public class UserService implements IUserService {
 
         return new UserDTO(user.getFirstName(), user.getLastName(), user.getEmail(), user.getPassword(),
                 user.getPhone());
-    }
-
-    public void login(String username, String password) {
-        LOGGER.debug("Inside UserService.login for username : " + username);
-        UserDetails user = myUserDetailsService.loadUserByUsername(username);
-
-        boolean passwordsMatch = passwordEncoder.matches(password, user.getPassword());
-
-        if (!passwordsMatch) {
-            throw new BadCredentialsException("Invalid username or password");
-        }
     }
 
     public User getUserByEmail(String email) {
@@ -79,6 +67,7 @@ public class UserService implements IUserService {
 
     public void addConnection(String ownerEmail, String buddyEmail) {
         LOGGER.debug("Inside UserService.addConnection");
+
         User owner = userRepository.findByEmail(ownerEmail);
         User buddyToAdd = userRepository.findByEmail(buddyEmail);
 

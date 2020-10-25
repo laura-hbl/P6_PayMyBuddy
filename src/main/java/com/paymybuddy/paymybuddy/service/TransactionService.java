@@ -43,9 +43,9 @@ public class TransactionService implements ITransactionService {
     }
 
     @Transactional
-    public TransactionDTO transferToBankAccount(PersonalTransactionDTO transferInfo) {
-        LOGGER.debug("Inside TransactionService.transferToBankAccount for {}", transferInfo.getEmail());
-        User user = userService.getUserByEmail(transferInfo.getEmail());
+    public TransactionDTO transferToBankAccount(String ownerEmail, PersonalTransactionDTO transferInfo) {
+        LOGGER.debug("Inside TransactionService.transferToBankAccount for {}", ownerEmail);
+        User user = userService.getUserByEmail(ownerEmail);
 
         if (user.getBankAccount() == null) {
             throw new ResourceNotFoundException("You need to register your Bank Account to transfer money");
@@ -72,9 +72,9 @@ public class TransactionService implements ITransactionService {
     }
 
     @Transactional
-    public TransactionDTO rechargeBalance(PersonalTransactionDTO rechargeInfo) {
-        LOGGER.debug("Inside TransactionService.rechargeBalance for {}", rechargeInfo.getEmail());
-        User user = userService.getUserByEmail(rechargeInfo.getEmail());
+    public TransactionDTO rechargeBalance(String ownerEmail, PersonalTransactionDTO rechargeInfo) {
+        LOGGER.debug("Inside TransactionService.rechargeBalance for {}", ownerEmail);
+        User user = userService.getUserByEmail(ownerEmail);
 
         if (user.getBankAccount() == null) {
             throw new ResourceNotFoundException("You need to register your Bank Account to recharge balance");
@@ -97,10 +97,10 @@ public class TransactionService implements ITransactionService {
     }
 
     @Transactional
-    public TransactionDTO payMyBuddy(PaymentTransactionDTO paymentInfo) {
+    public TransactionDTO payMyBuddy(String ownerEmail, PaymentTransactionDTO paymentInfo) {
         LOGGER.debug("Inside TransactionService.payMyBuddy");
-        User sender = userService.getUserByEmail(paymentInfo.getSenderEmail());
-        User receiver = userService.getUserByEmail(paymentInfo.getReceiverEmail());
+        User sender = userService.getUserByEmail(ownerEmail);
+        User receiver = userService.getUserByEmail(paymentInfo.getBuddyEmail());
 
         if (!sender.getContacts().contains(receiver)) {
             throw new ResourceNotFoundException("Fail to get connection. Please check the email entered");
@@ -124,9 +124,8 @@ public class TransactionService implements ITransactionService {
         Transaction transaction = transactionRepository.save(new Transaction(senderBuddyAccount, receiverBuddyAccount,
                 LocalDate.now(), paymentInfo.getDescription(), amount, fee));
 
-        TransactionDTO transactionDTO = new TransactionDTO(transaction.getBuddyOwner().getOwner().getEmail(),
-                transaction.getBuddyReceiver().getOwner().getEmail(), transaction.getDate(),
-                transaction.getDescription(), transaction.getAmount(), transaction.getFee());
+        TransactionDTO transactionDTO = new TransactionDTO(transaction.getBuddyReceiver().getOwner().getEmail(),
+                transaction.getDate(), transaction.getDescription(), transaction.getAmount(), transaction.getFee());
 
         return transactionDTO;
     }
