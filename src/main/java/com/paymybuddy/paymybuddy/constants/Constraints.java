@@ -5,7 +5,11 @@ public final class Constraints {
     public Constraints() {
     }
 
-    public static final int EMAIL_MAX_SIZE = 70;
+    public static final int FIRST_NAME_MAX_SIZE = 70;
+
+    public static final int LAST_NAME_MAX_SIZE = 70;
+
+    public static final int EMAIL_MIN_SIZE = 3;
 
     public static final int PASSWORD_MIN_SIZE = 5;
 
