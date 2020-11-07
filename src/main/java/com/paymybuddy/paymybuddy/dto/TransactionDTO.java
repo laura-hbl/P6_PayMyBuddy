@@ -13,6 +13,8 @@ import java.time.LocalDate;
 @Setter(AccessLevel.PUBLIC)
 public class TransactionDTO {
 
+    private String type;
+
     private String email;
 
     private LocalDate date;
@@ -23,8 +25,9 @@ public class TransactionDTO {
 
     private BigDecimal fee;
 
-    public TransactionDTO(String buddyEmail, LocalDate date, String description, BigDecimal amount,
+    public TransactionDTO(String type, String buddyEmail, LocalDate date, String description, BigDecimal amount,
                           BigDecimal fee) {
+        this.type = type;
         this.email = buddyEmail;
         this.date = date;
         this.description = description;
@@ -32,7 +35,8 @@ public class TransactionDTO {
         this.fee = fee;
     }
 
-    public TransactionDTO(LocalDate date, String description, BigDecimal amount, BigDecimal fee) {
+    public TransactionDTO(String type, LocalDate date, String description, BigDecimal amount, BigDecimal fee) {
+        this.type = type;
         this.date = date;
         this.description = description;
         this.amount = amount;

@@ -14,17 +14,17 @@ public class UserDTO {
 
     @NotNull
     @NotEmpty(message = "First name is required")
-    @Length(max = Constraints.EMAIL_MAX_SIZE)
+    @Length(max = Constraints.FIRST_NAME_MAX_SIZE)
     private String firstName;
 
     @NotNull
     @NotEmpty(message = "Last name is required")
-    @Length(max = Constraints.EMAIL_MAX_SIZE)
+    @Length(max = Constraints.LAST_NAME_MAX_SIZE)
     private String lastName;
 
     @NotNull
     @NotEmpty(message = "Email address is required")
-    @Length(max = Constraints.EMAIL_MAX_SIZE, message = "Please enter a valid email address")
+    @Length(min = Constraints.EMAIL_MIN_SIZE, message = "Please enter a valid email address")
     private String email;
 
     @NotNull

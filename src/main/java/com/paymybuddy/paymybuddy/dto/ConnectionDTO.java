@@ -14,6 +14,6 @@ public class ConnectionDTO {
 
     @NotNull
     @NotEmpty(message = "Buddy Email address is required")
-    @Length(max = Constraints.EMAIL_MAX_SIZE, message = "Please enter a valid email address")
+    @Length(min = Constraints.EMAIL_MIN_SIZE, message = "Please enter a valid email address")
     private String buddyEmail;
 }
