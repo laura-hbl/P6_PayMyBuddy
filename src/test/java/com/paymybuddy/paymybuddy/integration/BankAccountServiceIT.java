@@ -44,6 +44,5 @@ public class BankAccountServiceIT {
     public void givenAnRegisteredBankAccount_whenCreateBankAccount_thenDataAlreadyRegisteredExceptionIsThrown() {
         BankAccountDTO bankAccount = new BankAccountDTO("FR10 1000 1000 1000 1000 1000 J01", "CRLYGTED");
         bankAccountService.createBankAccount("brad@gmail.com", bankAccount);
-
     }
 }

@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Tag;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
@@ -72,7 +71,7 @@ public class UserServiceIT {
     @Tag("addConnection")
     @DisplayName("Given a buddy email to add, when addConnection, then buddy should be add in contact")
     public void givenABuddyEmailToAdd_whenAddConnection_thenBuddyShouldBeAddInContact() {
-        ContactsDTO contacts = userService.addConnection("brad@gmail.com","leonardo@gmail.com");
+        ContactsDTO contacts = userService.addConnection("brad@gmail.com", "leonardo@gmail.com");
 
         assertThat(contacts.getContacts()).contains("leonardo@gmail.com");
     }
@@ -82,12 +81,5 @@ public class UserServiceIT {
     @DisplayName("If buddy to add is not found, when addConnection, then throw UsernameNotFoundException")
     public void givenAnUnFoundBuddy_whenAddConnection_thenUsernameNotFoundExceptionIsThrown() {
         userService.addConnection("brad@gmail.com", "unfoundbuddy@gmail.com");
-    }
-
-    @Test(expected = DataIntegrityViolationException.class)
-    @Tag("addConnection")
-    @DisplayName("If buddy is already in contact, when addConnection, then throw DataIntegrityViolationException")
-    public void givenAnAlreadyAddedBuddy_whenAddConnection_thenDataIntegrityViolationExceptionIsThrown() {
-        userService.addConnection("brad@gmail.com", "tom@gmail.com");
     }
 }
