@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author Laura Habdul
  * @see ITransactionService
- * @see LoginEmailRetriever
  */
 @RestController
 public class TransactionController {

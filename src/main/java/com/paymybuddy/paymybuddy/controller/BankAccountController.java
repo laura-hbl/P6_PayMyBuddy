@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author Laura Habdul
  * @see IBankAccountService
- * @see LoginEmailRetriever
  */
 @RestController
 public class BankAccountController {

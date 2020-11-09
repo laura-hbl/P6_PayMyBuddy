@@ -3,7 +3,6 @@ package com.paymybuddy.paymybuddy.controller;
 import com.paymybuddy.paymybuddy.dto.ConnectionDTO;
 import com.paymybuddy.paymybuddy.dto.ContactsDTO;
 import com.paymybuddy.paymybuddy.dto.UserDTO;
-import com.paymybuddy.paymybuddy.security.MyUserDetailsService;
 import com.paymybuddy.paymybuddy.service.IUserService;
 import com.paymybuddy.paymybuddy.util.LoginEmailRetriever;
 import javax.servlet.http.HttpServletRequest;
@@ -22,8 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author Laura Habdul
  * @see IUserService
- * @see LoginEmailRetriever
- * @see MyUserDetailsService
  */
 @RestController
 public class UserController {

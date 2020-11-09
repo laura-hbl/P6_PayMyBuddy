@@ -6,7 +6,6 @@ import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -55,22 +54,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
      */
     @ExceptionHandler(UsernameNotFoundException.class)
     public ResponseEntity handleUnauthorized(final UsernameNotFoundException ex, final WebRequest request) {
-        LOGGER.error("Request - FAILED :", ex);
-        ErrorDetails errorDetails = new ErrorDetails(LocalDateTime.now(), ex.getMessage(),
-                request.getDescription(false));
-
-        return new ResponseEntity<>(errorDetails, HttpStatus.UNAUTHORIZED);
-    }
-
-    /**
-     * Handles exception of the specific type BadCredentialsException.
-     *
-     * @param ex      BadCredentialsException object
-     * @param request WebRequest object
-     * @return ResponseEntity error response object and Http Status generated
-     */
-    @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity handleBadCredentials(final BadCredentialsException ex, final WebRequest request) {
         LOGGER.error("Request - FAILED :", ex);
         ErrorDetails errorDetails = new ErrorDetails(LocalDateTime.now(), ex.getMessage(),
                 request.getDescription(false));
