@@ -1,12 +1,11 @@
 package com.paymybuddy.paymybuddy.unit.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.paymybuddy.paymybuddy.constants.TransactionTypes;
+import com.paymybuddy.paymybuddy.constants.TransactionType;
 import com.paymybuddy.paymybuddy.controller.TransactionController;
 import com.paymybuddy.paymybuddy.dto.PaymentTransactionDTO;
 import com.paymybuddy.paymybuddy.dto.PersonalTransactionDTO;
 import com.paymybuddy.paymybuddy.dto.TransactionDTO;
-import com.paymybuddy.paymybuddy.security.MyUserDetailsService;
 import com.paymybuddy.paymybuddy.service.TransactionService;
 import com.paymybuddy.paymybuddy.util.LoginEmailRetriever;
 import org.assertj.core.api.Assertions;
@@ -20,6 +19,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -46,7 +46,7 @@ public class TransactionControllerTest {
     private LoginEmailRetriever loginEmailRetriever;
 
     @MockBean
-    private MyUserDetailsService myUserDetailsService;
+    private UserDetailsService userDetailsService;
 
     @Autowired
     private MockMvc mockMvc;
@@ -69,8 +69,8 @@ public class TransactionControllerTest {
     @DisplayName("Given PersonalTransaction, when transferToBankAccount, then return OK status")
     public void givenAPersonalTransaction_whenTransferToBankAccount_thenReturnOKStatus() throws Exception {
         PersonalTransactionDTO transfer = new PersonalTransactionDTO("transfer", BigDecimal.valueOf(100));
-        TransactionDTO transaction = new TransactionDTO(TransactionTypes.TRANSFER, "bradPitt@gmail.com", LocalDate.now(),
-                "transfer", BigDecimal.valueOf(100),  BigDecimal.valueOf(0.5));
+        TransactionDTO transaction = new TransactionDTO(TransactionType.TRANSFER, "bradPitt@gmail.com", LocalDate.now(),
+                "transfer", BigDecimal.valueOf(100), BigDecimal.valueOf(0.5));
         when(transactionService.transferToBankAccount(anyString(), any(PersonalTransactionDTO.class))).
                 thenReturn(transaction);
 
@@ -146,8 +146,8 @@ public class TransactionControllerTest {
     @DisplayName("Given PersonalTransaction, when rechargeBalance, then return OK status")
     public void givenPersonalTransaction_whenRechargeBalance_thenReturnOKStatus() throws Exception {
         PersonalTransactionDTO recharge = new PersonalTransactionDTO("recharge", BigDecimal.valueOf(100));
-        TransactionDTO transaction = new TransactionDTO(TransactionTypes.RECHARGE, "bradPitt@gmail.com",
-                LocalDate.now(), "recharge", BigDecimal.valueOf(100),  BigDecimal.valueOf(0.5));
+        TransactionDTO transaction = new TransactionDTO(TransactionType.RECHARGE, "bradPitt@gmail.com",
+                LocalDate.now(), "recharge", BigDecimal.valueOf(100), BigDecimal.valueOf(0.5));
         when(transactionService.rechargeBalance(anyString(), any(PersonalTransactionDTO.class))).thenReturn(transaction);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/recharge")
@@ -183,7 +183,7 @@ public class TransactionControllerTest {
     public void givenAmountWithThreeDecimal_whenRechargeBalance_thenReturnBadRequestStatus() throws Exception {
         PersonalTransactionDTO recharge = new PersonalTransactionDTO("recharge", BigDecimal.valueOf(100.987));
 
-       mockMvc.perform(MockMvcRequestBuilders.post("/recharge")
+        mockMvc.perform(MockMvcRequestBuilders.post("/recharge")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(recharge)))
                 .andExpect(status().isBadRequest());
@@ -216,7 +216,7 @@ public class TransactionControllerTest {
     public void givenPaymentTransaction_whenPayment_thenReturnOKStatus() throws Exception {
         PaymentTransactionDTO payment = new PaymentTransactionDTO("buddy@gmail.com", "beers",
                 BigDecimal.valueOf(10));
-        TransactionDTO transaction = new TransactionDTO(TransactionTypes.PAYMENT, "buddy@gmail.com",
+        TransactionDTO transaction = new TransactionDTO(TransactionType.PAYMENT, "buddy@gmail.com",
                 LocalDate.now(), "beers", BigDecimal.valueOf(10), BigDecimal.valueOf(0.05));
         when(transactionService.payMyBuddy(anyString(), any(PaymentTransactionDTO.class))).thenReturn(transaction);
 

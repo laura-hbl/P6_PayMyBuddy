@@ -3,20 +3,20 @@ package com.paymybuddy.paymybuddy.unit.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.paymybuddy.paymybuddy.controller.BankAccountController;
 import com.paymybuddy.paymybuddy.dto.BankAccountDTO;
-import com.paymybuddy.paymybuddy.security.MyUserDetailsService;
 import com.paymybuddy.paymybuddy.service.BankAccountService;
 import com.paymybuddy.paymybuddy.util.LoginEmailRetriever;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -40,7 +40,7 @@ public class BankAccountControllerTest {
     private LoginEmailRetriever loginEmailRetriever;
 
     @MockBean
-    private MyUserDetailsService myUserDetailsService;
+    private UserDetailsService userDetailsService;
 
     @Autowired
     private MockMvc mockMvc;

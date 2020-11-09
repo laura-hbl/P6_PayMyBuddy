@@ -123,7 +123,7 @@ public class UserServiceTest {
         when(userRepository.findByEmail("buddy@gmail.com")).thenReturn(buddyToAdd);
         when(userRepository.save(any(User.class))).thenReturn(user);
 
-        ContactsDTO contacts = userService.addConnection("laurahbl@gmail.com","buddy@gmail.com");
+        ContactsDTO contacts = userService.addConnection("laurahbl@gmail.com", "buddy@gmail.com");
 
         assertThat(contacts.getContacts()).contains("buddy@gmail.com");
         verify(userRepository).save(any(User.class));

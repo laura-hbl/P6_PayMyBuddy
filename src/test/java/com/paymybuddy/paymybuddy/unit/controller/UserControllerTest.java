@@ -5,7 +5,6 @@ import com.paymybuddy.paymybuddy.controller.UserController;
 import com.paymybuddy.paymybuddy.dto.ConnectionDTO;
 import com.paymybuddy.paymybuddy.dto.ContactsDTO;
 import com.paymybuddy.paymybuddy.dto.UserDTO;
-import com.paymybuddy.paymybuddy.security.MyUserDetailsService;
 import com.paymybuddy.paymybuddy.service.UserService;
 import com.paymybuddy.paymybuddy.util.LoginEmailRetriever;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,6 +17,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -44,7 +44,7 @@ public class UserControllerTest {
     private LoginEmailRetriever loginEmailRetriever;
 
     @MockBean
-    private MyUserDetailsService myUserDetailsService;
+    private UserDetailsService userDetailsService;
 
     @Autowired
     private MockMvc mockMvc;

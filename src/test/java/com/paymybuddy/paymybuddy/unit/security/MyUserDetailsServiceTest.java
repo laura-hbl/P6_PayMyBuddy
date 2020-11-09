@@ -55,6 +55,6 @@ public class MyUserDetailsServiceTest {
     public void givenAnUnFoundUser_whenLoadUserByUsername_thenUsernameNotFoundExceptionIsThrown() {
         when(userRepository.findByEmail(anyString())).thenReturn(null);
 
-         myUserDetailsService.loadUserByUsername("laurahbl@gmail.com");
+        myUserDetailsService.loadUserByUsername("laurahbl@gmail.com");
     }
 }
