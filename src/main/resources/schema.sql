@@ -32,7 +32,7 @@ CREATE TABLE bank_account (
 
 CREATE TABLE transaction (
                 id BIGINT AUTO_INCREMENT NOT NULL,
-                 type VARCHAR(9) NOT NULL,
+                type VARCHAR(9) NOT NULL,
                 buddy_account_receiver_id BIGINT,
                 buddy_account_owner_id BIGINT NOT NULL,
                 bank_account_id BIGINT,

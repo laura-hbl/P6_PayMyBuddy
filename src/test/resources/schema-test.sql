@@ -106,8 +106,8 @@ INSERT INTO buddy_account
 VALUES
 (1, 1, 200),
 (2, 2, 800),
-(3, 3, 15),
-(4, 4, 0);
+(3, 3, 15.55),
+(4, 4, 0.00);
 
 INSERT INTO bank_account
 VALUES
