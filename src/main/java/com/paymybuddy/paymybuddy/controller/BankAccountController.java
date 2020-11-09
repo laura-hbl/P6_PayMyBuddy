@@ -14,15 +14,38 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Creates REST endpoints for operations on bank account data.
+ *
+ * @author Laura Habdul
+ * @see IBankAccountService
+ * @see LoginEmailRetriever
+ */
 @RestController
 public class BankAccountController {
 
+    /**
+     * TransactionController logger.
+     */
     private static final Logger LOGGER = LogManager.getLogger(BankAccountController.class);
 
+    /**
+     * IBankAccountService's implement class reference.
+     */
     private final IBankAccountService bankAccountService;
 
+    /**
+     * LoginEmailRetriever instance.
+     */
     private final LoginEmailRetriever loginEmailRetriever;
 
+    /**
+     * Constructor of class BankAccountController.
+     * Initialize bankAccountService, loginEmailRetriever.
+     *
+     * @param bankAccountService  IBankAccountService's implement class reference.
+     * @param loginEmailRetriever LoginEmailRetriever instance.
+     */
     @Autowired
     public BankAccountController(final IBankAccountService bankAccountService,
                                  final LoginEmailRetriever loginEmailRetriever) {
@@ -30,10 +53,18 @@ public class BankAccountController {
         this.loginEmailRetriever = loginEmailRetriever;
     }
 
+    /**
+     * Adds a bank account on application.
+     *
+     * @param bankAccountDTO bank account info (IBAN and BIC)
+     * @param request        HttpServletRequest instance
+     * @return ResponseEntity<BankAccountDTO> The response object and Http Status generated
+     */
     @PostMapping("/bankAccount")
     public ResponseEntity<BankAccountDTO> addBankAccount(@Valid @RequestBody final BankAccountDTO bankAccountDTO,
-                                                         HttpServletRequest request) {
-        LOGGER.debug("Bank account POST request with username {}", request.getUserPrincipal().getName());
+                                                         final HttpServletRequest request) {
+        LOGGER.debug("Bank account POST request with IBAN {} and BIC {}", bankAccountDTO.getIban(),
+                bankAccountDTO.getBic());
 
         String ownerEmail = loginEmailRetriever.getUsername(request);
 

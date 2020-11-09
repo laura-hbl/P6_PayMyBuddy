@@ -157,7 +157,7 @@ public class UserControllerTest {
                 .andReturn();
         String content = result.getResponse().getContentAsString();
 
-        assertThat(content).contains("Buddy Email address is required");
+        assertThat(content).contains("Buddy email address is required");
         verify(userService, times(0)).addConnection(anyString(), anyString());
     }
 

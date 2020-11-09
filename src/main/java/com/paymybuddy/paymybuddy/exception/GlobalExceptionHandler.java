@@ -25,15 +25,15 @@ import java.util.stream.Collectors;
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
-     /**
-     *  GlobalExceptionHandler logger.
+    /**
+     * GlobalExceptionHandler logger.
      */
     private static final Logger LOGGER = LogManager.getLogger(GlobalExceptionHandler.class);
 
-     /**
+    /**
      * Handles exception of the specific type DataAlreadyRegisteredException.
      *
-     * @param ex DataAlreadyRegisteredException object
+     * @param ex      DataAlreadyRegisteredException object
      * @param request WebRequest object
      * @return ResponseEntity error response object and Http Status generated
      */
@@ -46,6 +46,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(errorDetails, HttpStatus.CONFLICT);
     }
 
+    /**
+     * Handles exception of the specific type UsernameNotFoundException.
+     *
+     * @param ex      UsernameNotFoundException object
+     * @param request WebRequest object
+     * @return ResponseEntity error response object and Http Status generated
+     */
     @ExceptionHandler(UsernameNotFoundException.class)
     public ResponseEntity handleUnauthorized(final UsernameNotFoundException ex, final WebRequest request) {
         LOGGER.error("Request - FAILED :", ex);
@@ -55,6 +62,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(errorDetails, HttpStatus.UNAUTHORIZED);
     }
 
+    /**
+     * Handles exception of the specific type BadCredentialsException.
+     *
+     * @param ex      BadCredentialsException object
+     * @param request WebRequest object
+     * @return ResponseEntity error response object and Http Status generated
+     */
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity handleBadCredentials(final BadCredentialsException ex, final WebRequest request) {
         LOGGER.error("Request - FAILED :", ex);
@@ -64,6 +78,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(errorDetails, HttpStatus.UNAUTHORIZED);
     }
 
+    /**
+     * Handles exception of the specific type BadRequestException.
+     *
+     * @param ex      BadRequestException object
+     * @param request WebRequest object
+     * @return ResponseEntity error response object and Http Status generated
+     */
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity handleBadRequest(final BadRequestException ex, final WebRequest request) {
         LOGGER.error("Request - FAILED :", ex);
@@ -73,6 +94,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
     }
 
+    /**
+     * Handles exception of the specific type esourceNotFoundException.
+     *
+     * @param ex      ResourceNotFoundException object
+     * @param request WebRequest object
+     * @return ResponseEntity error response object and Http Status generated
+     */
     @ExceptionHandler(ResourceNotFoundException.class)
     protected ResponseEntity handleNotFound(final ResourceNotFoundException ex, final WebRequest request) {
         LOGGER.error("Request - FAILED :", ex);
@@ -82,9 +110,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
     }
 
+    /**
+     * Handles exception of the specific type MethodArgumentNotValidException.
+     *
+     * @param ex      MethodArgumentNotValidException object
+     * @param request WebRequest object
+     * @return ResponseEntity error response object and Http Status generated
+     */
     @Override
-    public ResponseEntity handleMethodArgumentNotValid(final MethodArgumentNotValidException ex, HttpHeaders header,
-                                                       HttpStatus status, WebRequest request) {
+    public ResponseEntity handleMethodArgumentNotValid(final MethodArgumentNotValidException ex, final HttpHeaders header,
+                                                       final HttpStatus status, final WebRequest request) {
         LOGGER.error("Request - FAILED :", ex);
         // Get the error messages for invalid fields
         String errorMessage = ex.getBindingResult().getFieldErrors().stream()
@@ -94,6 +129,5 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ErrorDetails errorDetails = new ErrorDetails(LocalDateTime.now(), errorMessage, request.getDescription(false));
 
         return new ResponseEntity<Object>(errorDetails, HttpStatus.BAD_REQUEST);
-
     }
 }

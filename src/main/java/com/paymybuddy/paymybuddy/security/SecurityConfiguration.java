@@ -6,8 +6,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -19,15 +17,33 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.io.IOException;
 
+/**
+ * Application security configuration class.
+ *
+ * @author Laura Habdul
+ */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
+    /**
+     * UserDetailsService instance.
+     */
     private final UserDetailsService userDetailsService;
 
+    /**
+     * ObjectMapper instance.
+     */
     private final ObjectMapper objectMapper;
 
-    public SecurityConfiguration(UserDetailsService userDetailsService, ObjectMapper objectMapper) {
+    /**
+     * Constructor of class SecurityConfiguration.
+     * Initialize userDetailsService and objectMapper.
+     *
+     * @param userDetailsService UserDetailsService instance
+     * @param objectMapper       ObjectMapper instance
+     */
+    public SecurityConfiguration(final UserDetailsService userDetailsService, final ObjectMapper objectMapper) {
         this.userDetailsService = userDetailsService;
         this.objectMapper = objectMapper;
     }
@@ -42,12 +58,20 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder();
     }
 
-    @Override
-    @Bean
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
+    /**
+     * Configure the AuthenticationManagerBuilder to use the password encoder.
+     *
+     * @param authManagerBuilder AuthenticationManagerBuilder instance
+     */
+    protected void configure(AuthenticationManagerBuilder authManagerBuilder) throws Exception {
+        authManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
     }
 
+    /**
+     * Allows configuring web based security for specific http requests.
+     *
+     * @param http HttpSecurity
+     */
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
         http.csrf().disable()
@@ -72,52 +96,58 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .authenticationEntryPoint(this::authenticationEntryPointHandler);
     }
 
-    private void loginSuccessHandler(HttpServletRequest request, HttpServletResponse response,
-                                     Authentication authentication) throws IOException {
+    /**
+     * Handles login success.
+     *
+     * @param response       HttpServletResponse object
+     * @param request        HttpServletRequest object
+     * @param authentication Authentication object
+     */
+    private void loginSuccessHandler(final HttpServletRequest request, final HttpServletResponse response,
+                                     final Authentication authentication) throws IOException {
 
         response.setStatus(HttpStatus.OK.value());
         objectMapper.writeValue(response.getWriter(), "You are now logged in to Pay my Buddy!");
     }
 
-    private void loginFailureHandler(HttpServletRequest request, HttpServletResponse response,
-                                     AuthenticationException e) throws IOException {
+    /**
+     * Handles login failure.
+     *
+     * @param response HttpServletResponse object
+     * @param request  HttpServletRequest object
+     * @param e        AuthenticationException object
+     */
+    private void loginFailureHandler(final HttpServletRequest request, final HttpServletResponse response,
+                                     final AuthenticationException e) throws IOException {
 
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         objectMapper.writeValue(response.getWriter(), "The email or password you entered is incorrect.");
     }
 
-    private void logoutSuccessHandler(HttpServletRequest request, HttpServletResponse response,
-                                      Authentication authentication) throws IOException {
+    /**
+     * Handles logout success.
+     *
+     * @param response       HttpServletResponse object
+     * @param request        HttpServletRequest object
+     * @param authentication Authentication object
+     */
+    private void logoutSuccessHandler(final HttpServletRequest request, final HttpServletResponse response,
+                                      final Authentication authentication) throws IOException {
 
         response.setStatus(HttpStatus.OK.value());
         objectMapper.writeValue(response.getWriter(), "You have successfully logged out!");
     }
 
-    private void authenticationEntryPointHandler(HttpServletRequest request, HttpServletResponse response,
-                                                 AuthenticationException e) throws IOException {
+    /**
+     * Handles authenticationEntryPoint.
+     *
+     * @param response HttpServletResponse object
+     * @param request  HttpServletRequest object
+     * @param e        AuthenticationException object
+     */
+    private void authenticationEntryPointHandler(final HttpServletRequest request, final HttpServletResponse response,
+                                                 final AuthenticationException e) throws IOException {
         response.setStatus(HttpStatus.FORBIDDEN.value());
         objectMapper.writeValue(response.getWriter(), "You have to logged in first!");
     }
-
-    @Override
-    protected void configure(final AuthenticationManagerBuilder auth)
-            throws Exception {
-        auth.authenticationProvider(authenticationProvider());
-    }
-
-    /**
-     * An AuthenticationProvider implementation that retrieves user details from
-     * a UserDetailsService.
-     *
-     * @return a DaoAuthenticationProvider object
-     */
-    @Bean
-    public DaoAuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider =
-                new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService);
-        authProvider.setPasswordEncoder(passwordEncoder());
-        return authProvider;
-    }
 }
-

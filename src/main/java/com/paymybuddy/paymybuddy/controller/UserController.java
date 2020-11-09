@@ -1,6 +1,7 @@
 package com.paymybuddy.paymybuddy.controller;
 
 import com.paymybuddy.paymybuddy.dto.ConnectionDTO;
+import com.paymybuddy.paymybuddy.dto.ContactsDTO;
 import com.paymybuddy.paymybuddy.dto.UserDTO;
 import com.paymybuddy.paymybuddy.security.MyUserDetailsService;
 import com.paymybuddy.paymybuddy.service.IUserService;
@@ -16,27 +17,53 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Creates REST endpoints for operations on user data.
+ *
+ * @author Laura Habdul
+ * @see IUserService
+ * @see LoginEmailRetriever
+ * @see MyUserDetailsService
+ */
 @RestController
 public class UserController {
 
+    /**
+     * UserController logger.
+     */
     private static final Logger LOGGER = LogManager.getLogger(UserController.class);
 
+    /**
+     * IUserService's implement class reference.
+     */
     private final IUserService userService;
 
+    /**
+     * LoginEmailRetriever instance.
+     */
     private final LoginEmailRetriever loginEmailRetriever;
 
-    private final MyUserDetailsService myUserDetailsService;
-
+    /**
+     * Constructor of class UserController.
+     * Initialize userService and loginEmailRetriever.
+     *
+     * @param userService          IUserService's implement class reference
+     * @param loginEmailRetriever  LoginEmailRetriever instance
+     */
     @Autowired
-    public UserController(final IUserService userService, final LoginEmailRetriever loginEmailRetriever,
-                          final MyUserDetailsService myUserDetailsService) {
+    public UserController(final IUserService userService, final LoginEmailRetriever loginEmailRetriever) {
         this.userService = userService;
         this.loginEmailRetriever = loginEmailRetriever;
-        this.myUserDetailsService = myUserDetailsService;
     }
 
+    /**
+     * Registers a new user.
+     *
+     * @param user the user to be registered
+     * @return ResponseEntity<UserDTO> The response object and Http Status generated
+     */
     @PostMapping("/registration")
-    public ResponseEntity<UserDTO> registerUser(@Valid @RequestBody UserDTO user) {
+    public ResponseEntity<UserDTO> registerUser(@Valid @RequestBody final UserDTO user) {
         LOGGER.debug("Registration request with username {}", user.getEmail());
 
         UserDTO userSaved = userService.registerUser(user);
@@ -45,15 +72,22 @@ public class UserController {
         return new ResponseEntity<>(userSaved, HttpStatus.CREATED);
     }
 
+    /**
+     * Adds a new connection.
+     *
+     * @param connectionDTO the buddy email to be added
+     * @return ResponseEntity<ContactsDTO> The response object and Http Status generated
+     */
     @PostMapping("/contact")
-    public String addConnection(@Valid @RequestBody ConnectionDTO connectionDTO, HttpServletRequest request) {
+    public ResponseEntity<ContactsDTO> addConnection(@Valid @RequestBody final ConnectionDTO connectionDTO,
+                                                     final HttpServletRequest request) {
         LOGGER.debug("Add connection request with buddy email {}", connectionDTO.getBuddyEmail());
 
         String ownerEmail = loginEmailRetriever.getUsername(request);
 
-        userService.addConnection(ownerEmail, connectionDTO.getBuddyEmail());
+        ContactsDTO contacts = userService.addConnection(ownerEmail, connectionDTO.getBuddyEmail());
 
         LOGGER.info("Add connection request - SUCCESS");
-        return "Connection is add successfully!";
+        return new ResponseEntity<>(contacts, HttpStatus.OK);
     }
 }

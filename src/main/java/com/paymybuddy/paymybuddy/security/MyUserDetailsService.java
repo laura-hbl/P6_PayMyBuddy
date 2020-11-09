@@ -18,19 +18,42 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Custom implementation of UserDetailsService interface.
+ *
+ * @author Laura Habdul
+ */
 @Service
 public class MyUserDetailsService implements UserDetailsService {
 
+    /**
+     * MyUserDetailsService logger.
+     */
     private static final Logger LOGGER = LogManager.getLogger(MyUserDetailsService.class);
 
+    /**
+     * UserRepository instance.
+     */
     private final UserRepository userRepository;
 
+    /**
+     * Constructor of class MyUserDetailsService.
+     * Initialize userRepository.
+     *
+     * @param userRepository UserRepository instance
+     */
     public MyUserDetailsService(final UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
-    @Transactional
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    /**
+     * Finds and loads details of an user based on the username(email).
+     *
+     * @param email the user's email
+     * @return UserDetails instance
+     */
+    @Transactional(readOnly = true)
+    public UserDetails loadUserByUsername(final String email) throws UsernameNotFoundException {
         LOGGER.debug("Inside MyUserDetailsService.loadUserByUsername for username : " + email);
 
         User user = userRepository.findByEmail(email);
@@ -48,6 +71,7 @@ public class MyUserDetailsService implements UserDetailsService {
                 grantedAuthorities);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        return new MyUserDetails(user, grantedAuthorities);
+        return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(),
+                grantedAuthorities);
     }
 }

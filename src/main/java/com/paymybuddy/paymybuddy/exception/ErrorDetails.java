@@ -4,6 +4,11 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
+/**
+ * Permits the storage and retrieving of customized error response.
+ *
+ * @author Laura Habdul
+ */
 @AllArgsConstructor(access = AccessLevel.PUBLIC)
 @Getter(AccessLevel.PUBLIC)
 @Setter(AccessLevel.PUBLIC)
