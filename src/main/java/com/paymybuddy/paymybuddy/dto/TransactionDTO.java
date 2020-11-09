@@ -1,5 +1,6 @@
 package com.paymybuddy.paymybuddy.dto;
 
+import com.paymybuddy.paymybuddy.constants.TransactionType;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -19,7 +20,7 @@ public class TransactionDTO {
     /**
      * The type of transaction.
      */
-    private String type;
+    private TransactionType type;
 
     /**
      * Email of owner (if personal transaction) / buddy (if payment).

@@ -1,6 +1,6 @@
 package com.paymybuddy.paymybuddy.service;
 
-import com.paymybuddy.paymybuddy.constants.TransactionTypes;
+import com.paymybuddy.paymybuddy.constants.TransactionType;
 import com.paymybuddy.paymybuddy.dto.PaymentTransactionDTO;
 import com.paymybuddy.paymybuddy.dto.PersonalTransactionDTO;
 import com.paymybuddy.paymybuddy.dto.TransactionDTO;
@@ -108,7 +108,7 @@ public class TransactionService implements ITransactionService {
         buddyAccount.setBalance(balance.subtract(amount.add(fee)));
         BuddyAccount buddyAccountSaved = buddyAccountService.saveBuddyAccount(buddyAccount);
 
-        Transaction transaction = transactionRepository.save(new Transaction(TransactionTypes.TRANSFER,
+        Transaction transaction = transactionRepository.save(new Transaction(TransactionType.TRANSFER,
                 buddyAccountSaved, user.getBankAccount(), LocalDate.now(), transfer.getDescription(), amount, fee));
 
         TransactionDTO transactionDTO = new TransactionDTO(transaction.getType(), transaction.getBuddyOwner().getOwner()
@@ -147,7 +147,7 @@ public class TransactionService implements ITransactionService {
         buddyAccount.setBalance(balance.subtract(fee).add(amount));
         buddyAccountService.saveBuddyAccount(buddyAccount);
 
-        Transaction transaction = transactionRepository.save(new Transaction(TransactionTypes.RECHARGE, buddyAccount,
+        Transaction transaction = transactionRepository.save(new Transaction(TransactionType.RECHARGE, buddyAccount,
                 user.getBankAccount(), LocalDate.now(), recharge.getDescription(), amount, fee));
 
         TransactionDTO transactionDTO = new TransactionDTO(transaction.getType(), transaction.getBuddyOwner().getOwner()
@@ -199,7 +199,7 @@ public class TransactionService implements ITransactionService {
         receiverBuddyAccount.setBalance(receiverBuddyAccount.getBalance().add(amount));
         buddyAccountService.saveBuddyAccount(receiverBuddyAccount);
 
-        Transaction transaction = transactionRepository.save(new Transaction(TransactionTypes.PAYMENT,
+        Transaction transaction = transactionRepository.save(new Transaction(TransactionType.PAYMENT,
                 senderBuddyAccount, receiverBuddyAccount, LocalDate.now(), payment.getDescription(), amount, fee));
 
         TransactionDTO transactionDTO = new TransactionDTO(transaction.getType(), transaction.getBuddyReceiver()

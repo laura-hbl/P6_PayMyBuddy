@@ -1,7 +1,12 @@
 package com.paymybuddy.paymybuddy.model;
 
+import com.paymybuddy.paymybuddy.constants.TransactionType;
 import javax.persistence.*;
-import lombok.*;
+import javax.validation.constraints.NotNull;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -30,9 +35,10 @@ public class Transaction implements Serializable {
     /**
      * The type of transaction.
      */
-    @Getter
-    @Setter
-    private String type;
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type")
+    private TransactionType type;
 
     /**
      * Buddy account of sender
@@ -91,7 +97,7 @@ public class Transaction implements Serializable {
      * @param amount        amount of transaction
      * @param fee           fee calculated of transaction
      */
-    public Transaction(final String type, final BuddyAccount buddyOwner, final BuddyAccount buddyReceiver,
+    public Transaction(final TransactionType type, final BuddyAccount buddyOwner, final BuddyAccount buddyReceiver,
                        final LocalDate date, final String description, final BigDecimal amount, final BigDecimal fee) {
         super();
         this.type = type;
@@ -115,7 +121,7 @@ public class Transaction implements Serializable {
      * @param amount      amount of transaction
      * @param fee         fee calculated of transaction
      */
-    public Transaction(final String type, final BuddyAccount buddyOwner, final BankAccount bankAccount,
+    public Transaction(final TransactionType type, final BuddyAccount buddyOwner, final BankAccount bankAccount,
                        final LocalDate date, final String description, final BigDecimal amount, final BigDecimal fee) {
         super();
         this.type = type;
