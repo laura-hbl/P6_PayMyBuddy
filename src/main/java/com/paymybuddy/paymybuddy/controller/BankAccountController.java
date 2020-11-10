@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class BankAccountController {
 
     /**
-     * TransactionController logger.
+     * BankAccountController logger.
      */
     private static final Logger LOGGER = LogManager.getLogger(BankAccountController.class);
 
