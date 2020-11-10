@@ -1,11 +1,11 @@
 # Pay My Buddy 
 
 Pay My Buddy is an application that allows you to easily transfer money to manage your finance or pay your friends.
-
-## Info
-
-Author : * **Laura Habdul**
 Version : 1.0
+
+## Author
+
+**Laura Habdul**
 
 ## Technologies
 
